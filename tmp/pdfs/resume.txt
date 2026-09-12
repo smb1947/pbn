@@ -1,0 +1,57 @@
+                                                    ​Shankar Binjawadgi​
+                               ​smb.bourne.007@gmail.com​​| Seattle, WA | (206) 476-8074​​|​​smb007.me​
+
+​EXPERIENCE​
+​STREAK AI TECHNOLOGIES LLC​,​​Seattle, WA​
+ ​Founder & AI Product Builder,​​StreakFit AI​                                                                         ​Jun 2026 – Present​
+   ​●​ ​Formulated 3 hypotheses targeting students’ gym routine problems based on secondary research and then conducted 6 primary​
+          ​research interviews, leading to 3 insights discovery; built & demoed a spec-driven v1 app at OpenAI CodeX Hackathon.​
+    ​●​ ​Iterating v3 of a 0-to-1 AI gym buddy app basis feedback from 30+ people; building behavioral psychology informed personalized​
+           ​AI features such as check-ins, multi turn conversations and in-app nudges using prompt, context, & memory engineering.​
+     ​●​ ​Demoed at 3 hackathons, winning 2nd place among 24 teams in MKTG 565, Building Business Applications of LLMs Hackathon.​
+​AI Product Builder​                                                                                                        ​Sep 2025 – May 2026​
+  ​●​ ​Led an 11-member cross-functional team (Design/Eng/Biz) to build HeyLily, a GenAI scam-call assistant app for seniors based on​
+           ​15+ user interviews; guided design & dev team on UX & engineering solutions; crafted a 5-year B2B2C GTM & Finance model.​
+   ​●​ ​Pitched HeyLily to 12 Venture Capitalists from PNW area at Pioneer Square Labs, securing investment approval from 5 VCs.​
+    ​●​ ​Interviewed 2 hike organizers to identify planning pain points; architected AI Hike Researcher, a cost and time efficient multi-step​
+            ​AI agent that gathers 6 real-time safety signals and personalizes trail filtering, reducing weekly planning time by 98%.​
+     ​●​ ​Built a GenAI powered Spotify music recommendation engine in n8n for mood and occasion based sub-playlist curation,​
+             ​dynamically selecting from 12 song attributes to improve relevance by 73% versus a rule-based baseline.​
+      ​●​ ​Launched & conducted a new ‘Product Teardown’ series to decode popular products, producing 3 events with 110+ attendees.​
+
+​AMAZON WEB SERVICES​,​​Seattle, WA​
+ ​Senior Product Manager Technical - External Services,​​AWS Billing and Cost Management (FinOps)​                             ​Jun – Sep 2025​
+   ​●​ ​Authored a 6-page strategy narrative for AWS FinOps Cost Optimization to gain Director level (L8) alignment on OKRs & customer​
+           ​needs across segments, synthesizing insights from 45+ field interviews, 1000+ requests, & ‘State of FinOps’ reports.​
+    ​●​ ​Discovered and prioritized 6 new features using a customer-aligned Effort-Risk-Savings framework, informing the 2026 roadmap.​
+     ​●​ ​Conducted 10 VoC interviews with customers including Salesforce, Twilio, & BMW to uncover FinOps practices & S3 pain points,​
+            ​defining a PRFAQ (PRD) for 3 rigorously scoped S3 features with up to 40% savings potential; one is now in development.​
+      ​●​ ​Developed S3 cost savings model across 24 pricing combinations (8 levers × 3 storage classes) with S3 Storage experts;​
+             ​introduced a mitigation plan to correct 6 conservative defaults and increase savings estimate accuracy by 8x.​
+​MICROSOFT​, Bangalore, India​
+ ​Technical Product Owner,​​Azure Data Lake Storage (Network File System)​                                              ​Jul 2021 – Jul 2024​
+   ​●​ ​Discovered, defined & built a 0-to-1 storage client for BlobNFS (WSL2 virtualization based), giving agentic workloads a sandboxed​
+          ​storage environment; unlocked a new Windows segment and onboarded 150+ B2B customers with 100s of petabytes of usage.​
+    ​●​ ​Delivered high-throughput (1Tbps & 200k IOPS) distributed cloud storage system for data analytics workloads, scaling the​
+           ​capacity 8x to meet enterprise requirements; orchestrated delivery across 4 global engineering teams.​
+     ​●​ ​Ideated & developed a 5x memory efficient ‘chunked’ cache & ‘soft purging’ algorithm to address metadata API latency for HPC​
+            ​customers, reducing customer-related incidents (CRIs) by 95% and driving a 30% increase in adoption among AI/ML workloads.​
+​Software Engineer,​​Azure Monitor & Migrate​                                                                              ​Jul 2018 – Jul 2021​
+  ​●​ ​Designed the UX for the Action Rules feature that increased CSAT from 62% to 89%; reduced the page load latency by 80% via​
+         ​component redesign and lazy loading in a Typescript framework, earning the ‘Customer Obsession’ award.​
+   ​●​ ​Rearchitected Azure Cosmos Database to reduce cost by 45% for a write heavy workload by distributing load across partitions.​
+    ​●​ ​Modernized the compute fleet by migrating to Service Fabric orchestrator platform (Microsoft’s Kubernetes alternative),​
+          ​improving availability by 3x (Availability zones) for better Disaster Recovery while reducing the compute cost by ~53%.​
+
+​EDUCATION​
+​FOSTER SCHOOL OF BUSINESS, UNIVERSITY OF WASHINGTON​,​​Seattle, WA                                                      Jun 2026​
+ ​Master of Business Administration (MBA), Management Science (STEM), VP of Foster Tech Club & Global Business Association​
+​PES UNIVERSITY​,​​Bangalore, India​                                                                                                ​June 2018​
+ ​Bachelor of Engineering, Computer Science, 9.5 CGPA, Top 5% of the class​
+
+​SKILLS & TOOLS​
+ ​●​  ​Skills: User & Market research, Cross functional collaboration, UI/UX Design thinking, Prototyping, Gen AI & ML, FinOps, DevOps,​
+       ​Competitive Analysis, Product Strategy, Metric-driven Prioritization, Go-to-market, Agile, CI/CD, Virtualization, Network Storage,​
+        ​Compute, Workflow automation, Developer Experience, Technical Roadmap, Database Engine optimization, KPI, API​
+ ​●​ ​Tools: Claude Code, LLM & RAG, Figma, Canva, Tableau/Power BI, AWS, Azure, Java, Python, SQL, NoSQL, CLI, Bash, DevTools​
+
