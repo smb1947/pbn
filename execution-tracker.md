@@ -2,13 +2,15 @@
 
 ## Goal
 
-Produce a defensible PbN Claims + Ledger strategy by Sunday, September 13, 2026 at 9:00 PM Pacific Time. Use eight focused hours per day and reserve the final three hours of Day 2 for review, refinement, and submission. The CEO and potentially other CxOs will read it.
+Produce a defensible PbN Claims & Ledger strategy by Sunday, September 13, 2026 at 9:00 PM Pacific Time. Use eight focused hours per day and reserve the final three hours of Day 2 for review, refinement, and submission. The CEO and potentially other CxOs will read it.
 
 ## Progress
 
 | Updated | Current phase | Used | Remaining | Next action |
 |---|---|---:|---:|---|
-| 2026-09-12 | Day 1: Frame | 1h | 15h | Establish the customer, users, current challenges, constraints, goals, and decision criteria; label unknowns and assumptions. |
+| 2026-09-13 | Day 1: Draft | 3.75h | 12.25h | Define the exact initial product workflow and requirements in `product-design.md`. |
+
+Latest work block: moved the undeveloped product and technical design sections from `draft-strategy.md` to `product-design.md`.
 
 Update this row and the phase status after every work block.
 
@@ -24,7 +26,7 @@ Update this row and the phase status after every work block.
 
 | Day | Main document | Purpose |
 |---|---|---|
-| 1 | Internal three-page strategy narrative | Establish the customer, problem, constraints, and goals; then lock the V1, success measures, design choices, and trade-offs. This is not submitted. |
+| 1 | Internal working strategy narrative | Capture the customer, problem, constraints, goals, V1, success measures, design choices, and trade-offs without a page limit. Condense after the strategy is complete. This is not submitted. |
 | 2 | Final six-page PRFAQ: 1.5-page press release + 4.5-page FAQs | Convert the approved strategy into the only final submission. |
 
 Appendices may be any length, but include only material needed to prove or defend the main narrative.
@@ -34,18 +36,20 @@ Appendices may be any length, but include only material needed to prove or defen
 | Work | Time | Status | Output |
 |---|---:|---|---|
 | Audit | 0.5h | Complete | Map every assignment requirement to the final document or appendix without assuming an existing draft. See `requirements-audit.md`. |
-| Frame and learn | 2h | In progress | PbN's context, customer/user hypotheses, current workflow, pain points, goals, measures, and constraints are drafted. Next establish decision criteria and validate the framing. |
-| Decide | 1.5h | Not started | Use the approved problem framing to choose the V1 boundary, supported paths, success measures, design decisions, and trade-offs. |
-| Draft | 2.5h | In progress (0.5h used) | PbN context, the assumed capability gap, a claims-and-ledger example, and core challenges are drafted. Complete the strategy only after framing, learning, and decisions. |
+| Frame and learn | 2h | Complete | Three operating-model segments and five common workflow needs are drafted. Segment-specific pain points are intentionally deferred pending primary and secondary customer research. |
+| Decide | 1.5h | Complete | Defined the beachhead, claim coverage, clearinghouse boundary, automation rule, required exceptions, and later scope. |
+| Draft | 2.5h | In progress (0.5h used) | Problem and product-strategy sections are drafted. System design and the remaining execution sections have not started. |
 | Review | 1.5h | Not started | Remove ambiguity and repetition; test the narrative against all six evaluation criteria. |
 
-**Three-page structure**
+**Working narrative structure**
 
 1. **Problem:** PbN context, target customer, primary users, current workflow, pain points, importance, goals, non-goals, and constraints.
-2. **Product strategy:** Product principles, recommended V1 and rationale, end-to-end customer workflow, included and excluded scope, and success metrics.
+2. **Product strategy:** Segment definitions, customer-research boundary, common workflow needs, V1 coverage and automation choices, rationale, later scope, principles, and success measures.
 3. **Execution strategy:** High-level system and ledger design, multi-tenancy, reliability, key trade-offs, risks, rollout, validation, and assumptions.
 
 Put detailed data models, APIs, accounting examples, state diagrams, and failure scenarios in the appendices.
+
+There is no Day 1 page limit during discovery. Preserve important evidence, assumptions, alternatives, and rationale now; remove repetition and condense only after the strategy is complete.
 
 **Day 1 gate:** Shankar can explain the customer problem, goals, constraints, and strategy in five minutes and defend why the V1 is neither smaller nor larger.
 
@@ -68,6 +72,7 @@ Put detailed data models, APIs, accounting examples, state diagrams, and failure
 
 ## Appendices — Must-have only
 
+- Plain-language glossary
 - End-to-end sequence and state model
 - Service-boundary and tenant-isolation diagram
 - Core data model with keys and uniqueness constraints
