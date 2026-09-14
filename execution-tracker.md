@@ -10,7 +10,7 @@ Produce a defensible PbN Claims & Ledger V1 Product and Technical Specification 
 |---|---|---:|---:|---|
 | 2026-09-14 | Day 2: Claim preparation deep dive | 3.75h | 12.25h | Review the completed Claim-preparation specification for consistency, then add the minimum end-to-end coverage required by the brief. |
 
-Latest work block: replaced the tenancy summary table with a plain-language security design defining the tenant model, tenant-owned data, tenant isolation, database context, row-level security, access control, and safe processing.
+Latest work block: rewrote the tenancy and security section in proposal-oriented passive voice so it does not imply that the recommended architecture already exists in PbN.
 
 Update this row and the phase status after every work block.
 

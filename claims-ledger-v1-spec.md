@@ -340,43 +340,43 @@ This append-only table explains who or what created, changed, validated, or appr
 
 ### Proposed tenancy model
 
-PbN uses a shared-database, shared-schema model. One physical `claims` table holds claims for all customer organizations; PbN does not create a separate copy of the table for every organization. Each tenant-owned row contains `organization_id`, and that value is part of its primary and foreign keys. PostgreSQL row-level security provides the database access boundary, while application authorization determines which actions a user may perform.
+A shared-database, shared-schema model is proposed. Claims for all customer organizations are stored in one physical `claims` table; no separate copy of the table is created for each organization. Every tenant-owned row contains `organization_id`, which is included in its primary and foreign keys. The database access boundary is enforced through PostgreSQL row-level security, while permitted user actions are enforced through application authorization.
 
 ### Tenant
 
-A tenant is one PbN customer organization. River Dental and Lake Dental may use the same application and database infrastructure, but each is a separate tenant. In this model, the `organizations` row is the tenant boundary. A small practice may have one organization and one location; a dental group may have one organization containing several practices and locations.
+A tenant is one customer organization. River Dental and Lake Dental may share the same application and database infrastructure, but each is treated as a separate tenant. The tenant boundary is represented by an `organizations` row. A small practice may be represented by one organization and one location; a dental group may be represented by one organization containing several practices and locations.
 
 ### Tenant-owned data
 
-Tenant-owned data is a record that belongs to exactly one organization. Patients, procedures, claims, claim lines, claim versions, and audit events are tenant-owned, so each includes `organization_id`. Reference data intended for every customer can remain shared only when it contains no customer-specific information or relationships.
+Tenant-owned data is a record that belongs to exactly one organization. Patients, procedures, claims, claim lines, claim versions, and audit events are treated as tenant-owned, so `organization_id` is included in each record. Reference data intended for every customer may remain shared only when it contains no customer-specific information or relationships.
 
-For example, River Dental's claim is identified by `(organization_id = org-001, claim_id = claim-001)`. Its patient relationship must contain the same `organization_id`. A composite foreign-key constraint rejects an attempt to connect that claim to a patient belonging to `org-002`.
+For example, River Dental's claim is identified by `(organization_id = org-001, claim_id = claim-001)`. The same `organization_id` is required in its patient relationship. An attempt to connect that claim to a patient belonging to `org-002` is rejected by a composite foreign-key constraint.
 
 ### Tenant isolation
 
-Tenant isolation guarantees that one organization cannot read, create, change, delete, or reference another organization's data. PbN enforces this boundary in both the application and the database. The backend derives `organization_id` from the authenticated user's session rather than accepting it from the browser. Every database relationship includes `organization_id`, and PostgreSQL row-level security filters every permitted read and write to the current organization.<sup>11</sup>
+Tenant isolation prevents one organization from reading, creating, changing, deleting, or referencing another organization's data. The boundary is enforced in both the application and the database. `organization_id` is derived from the authenticated user's session rather than accepted from the browser. It is included in every tenant-owned database relationship, and every permitted read and write is restricted to the current organization through PostgreSQL row-level security.<sup>11</sup>
 
 ### Database tenant context and row-level security
 
-The database tenant context is the authenticated organization that the backend assigns to one database transaction. Before executing a claim query, the backend begins a transaction and sets its transaction-local context to `org-001`. A row-level security policy compares every row's `organization_id` with that value. Its `USING` rule controls which existing rows may be read, updated, or deleted; its `WITH CHECK` rule rejects inserts or updates that use another organization's ID.
+The database tenant context is the authenticated organization assigned to one database transaction. Before a claim query is executed, a transaction is started and its transaction-local context is set to `org-001`. Every row's `organization_id` is compared with that value by a row-level security policy. Existing rows that may be read, updated, or deleted are controlled by the policy's `USING` rule. Inserts or updates containing another organization's ID are rejected by its `WITH CHECK` rule.
 
-The Claims component connects with a restricted database role that is neither a superuser nor permitted to bypass row-level security. Row-level security is forced on tenant-owned tables. The context ends with the transaction, so a pooled database connection cannot retain River Dental's organization when it is reused for Lake Dental.
+A restricted database role is assigned to the Claims component. The role is neither a superuser nor permitted to bypass row-level security, and row-level security is forced on tenant-owned tables. The context expires with the transaction, preventing a pooled database connection from retaining River Dental's organization when the connection is reused for Lake Dental.
 
 ### Access control
 
-Tenant isolation answers, “Which organization's data can this request reach?” Access control answers, “What may this user do with that organization's data?” PbN checks the authenticated user's role before each action. A `BILLING_COORDINATOR` or `ORG_ADMIN` may approve a claim, while a `READ_ONLY` user may only view it. Database roles restrict the Claims component to the tables and operations it needs, and database immutability rules prevent every role from updating or deleting an approved claim version. Access control is therefore enforced by both application rules and database permissions.
+Tenant isolation answers, “Which organization's data can this request reach?” Access control answers, “What may this user do with that organization's data?” The authenticated user's role is checked before each action. Claim approval is permitted for a `BILLING_COORDINATOR` or `ORG_ADMIN`, while only viewing is permitted for a `READ_ONLY` user. The Claims component is restricted to its required tables and operations through database roles, and approved claim versions are protected from updates and deletion through database immutability rules. Access control is therefore enforced through both application rules and database permissions.
 
 ### Safe processing
 
-Safe processing applies the same boundary to work that has no signed-in user, such as `ProcedureCompleted` events, retries, and scheduled jobs. Every message contains `organization_id`, the table-specific record ID, and a request identifier. The worker validates the message, starts a transaction with that organization as its database context, and uses both identifiers in every lookup. The uniqueness, idempotency, concurrency, and audit controls in the next section prevent duplicate or conflicting effects.
+Safe processing applies the same boundary to work performed without a signed-in user, such as `ProcedureCompleted` events, retries, and scheduled jobs. `organization_id`, the table-specific record ID, and a request identifier are included in every message. Each message is validated before a transaction is started with the specified organization as its database context. Both the organization and record identifiers are used in every lookup. Duplicate or conflicting effects are prevented through the uniqueness, idempotency, concurrency, and audit controls defined in the next section.
 
 ### Example request
 
-1. Ana signs in to PbN, which verifies that she belongs to River Dental as a `BILLING_COORDINATOR`.
-2. Ana approves `claim-001`; the browser sends the claim ID and idempotency key, but it does not send `organization_id` or Ana's role.
-3. The backend derives `org-001` and Ana's role from her authenticated session, authorizes the approval, and sets `org-001` as the database context for the transaction.
-4. Row-level security permits access to River Dental's `claim-001` and hides claims belonging to every other organization.
-5. Composite keys validate the claim's relationships, and the approval transaction creates one immutable version and one audit event. A retry with the same idempotency key returns that version instead of creating another.
+1. Ana's membership in River Dental and her `BILLING_COORDINATOR` role are verified when she signs in.
+2. When Ana approves `claim-001`, the claim ID and idempotency key are sent by the browser; `organization_id` and Ana's role are not supplied by the browser.
+3. `org-001` and Ana's role are derived from her authenticated session. The approval is authorized, and `org-001` is assigned as the database context for the transaction.
+4. Access to River Dental's `claim-001` is permitted by row-level security, while claims belonging to every other organization remain hidden.
+5. The claim's relationships are validated through composite keys, and one immutable version and audit event are created by the approval transaction. A retry with the same idempotency key returns the existing version instead of creating another.
 
 ## Database Integrity, Indexes, and Concurrency
 
