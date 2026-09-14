@@ -342,11 +342,7 @@ This append-only table explains who or what created, changed, validated, or appr
 
 The above is a shared-database, shared-schema model. Claims for all customer organizations are stored in one physical `claims` table; no separate copy of the table is created for each organization. Every tenant-owned row contains `organization_id`, which is included in its primary and foreign keys. The database access boundary is enforced through PostgreSQL row-level security, while permitted user actions are enforced through application authorization.
 
-### Tenant
-
 A tenant is one customer organization. River Dental and Lake Dental may share the same application and database infrastructure, but each is treated as a separate tenant. The tenant boundary is represented by an `organizations` row. A small practice may be represented by one organization and one location; a dental group may be represented by one organization containing several practices and locations.
-
-### Tenant-owned data
 
 Tenant-owned data is a record that belongs to exactly one organization, so `organization_id` is included in each record.
 
@@ -356,7 +352,7 @@ Assume `patient-900` belongs to Lake Dental as `(org-002, patient-900)`. If a Ri
 
 ### Tenant isolation
 
-**Definition.** Tenant isolation prevents one organization from reading, creating, changing, deleting, or referencing another organization's data.
+Tenant isolation prevents one organization from reading, creating, changing, deleting, or referencing another organization's data.
 
 **Proposed solution**
 
