@@ -340,7 +340,7 @@ This append-only table explains who or what created, changed, validated, or appr
 
 ### Proposed tenancy model
 
-A shared-database, shared-schema model is proposed. Claims for all customer organizations are stored in one physical `claims` table; no separate copy of the table is created for each organization. Every tenant-owned row contains `organization_id`, which is included in its primary and foreign keys. The database access boundary is enforced through PostgreSQL row-level security, while permitted user actions are enforced through application authorization.
+The above is a shared-database, shared-schema model. Claims for all customer organizations are stored in one physical `claims` table; no separate copy of the table is created for each organization. Every tenant-owned row contains `organization_id`, which is included in its primary and foreign keys. The database access boundary is enforced through PostgreSQL row-level security, while permitted user actions are enforced through application authorization.
 
 ### Tenant
 
@@ -348,9 +348,9 @@ A tenant is one customer organization. River Dental and Lake Dental may share th
 
 ### Tenant-owned data
 
-Tenant-owned data is a record that belongs to exactly one organization. Patients, procedures, claims, claim lines, claim versions, and audit events are treated as tenant-owned, so `organization_id` is included in each record. Reference data intended for every customer may remain shared only when it contains no customer-specific information or relationships.
+Tenant-owned data is a record that belongs to exactly one organization, so `organization_id` is included in each record.
 
-For example, River Dental's claim is identified by `(organization_id = org-001, claim_id = claim-001)`. The same `organization_id` is required in its patient relationship. An attempt to connect that claim to a patient belonging to `org-002` is rejected by a composite foreign-key constraint.
+For example, Ana is creating a claim for River Dental, whose authenticated organization is `org-001`. A software defect supplies `patient-900`, a patient belonging to Lake Dental (`org-002`), instead of River Dental's `patient-001`. The proposed `patients` primary key is `(organization_id, patient_id)`, and the proposed `claims` foreign key is `(organization_id, patient_id) → patients (organization_id, patient_id)`. The new claim therefore tries to reference patient `(org-001, patient-900)`. Only `(org-002, patient-900)` exists, so the composite foreign-key check finds no valid River Dental patient and rejects the entire claim-creation transaction. No claim is created and Lake Dental's patient is unchanged. Row-level security provides an earlier read boundary: while the database context is `org-001`, a query for `patient-900` cannot return Lake Dental's row. The composite foreign key remains the final write safeguard if an incorrect ID reaches the insert.
 
 ### Tenant isolation
 
