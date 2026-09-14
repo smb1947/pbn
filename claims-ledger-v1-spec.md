@@ -397,14 +397,7 @@ VALUES (
 COMMIT;
 ```
 
-The organization ID is derived from the authenticated session and set by the backend; it is not accepted from the browser. `SET LOCAL` keeps the context within one transaction, so a pooled connection cannot carry River Dental's context into a later Lake Dental request. Composite foreign keys provide an additional check by preventing a River Dental record from referencing a Lake Dental record.
-
-**Required rules**
-
-- Enable and force row-level security on every tenant-owned table.
-- Use a restricted application database role without superuser or `BYPASSRLS` privileges.
-- Include `organization_id` in tenant-owned keys, relationships, indexes, events, and audit records.
-- Reject a release if automated tests can read, write, or relate records across organizations.
+The organization ID is derived from the authenticated session and set by the backend; it is not simply accepted from the browser or REST API clients. `SET LOCAL` keeps the context within one transaction, so a pooled connection cannot carry River Dental's context into a later Lake Dental request. Composite foreign keys provide an additional check by preventing a River Dental record from referencing a Lake Dental record.
 
 **Limitations**
 
@@ -414,7 +407,23 @@ The organization ID is derived from the authenticated session and set by the bac
 
 ### Access control
 
-Tenant isolation answers, “Which organization's data can this request reach?” Access control answers, “What may this user do with that organization's data?” The authenticated user's role is checked before each action. Claim approval is permitted for a `BILLING_COORDINATOR` or `ORG_ADMIN`, while only viewing is permitted for a `READ_ONLY` user. The Claims component is restricted to its required tables and operations through database roles, and approved claim versions are protected from updates and deletion through database immutability rules. Access control is therefore enforced through both application rules and database permissions.
+Access control determines what an authenticated user may do with records inside the user's organization.
+
+**Proposed solution**
+
+- Map each `users.role` to explicit permissions. `BILLING_COORDINATOR` and `ORG_ADMIN` receive `claim:approve`; `READ_ONLY` receives only `claim:read`.
+- Require one permission on every API operation. `POST /v1/claims/{claim_id}/approve` requires `claim:approve`.
+- Return `403 Forbidden` before accessing the database when the required permission is missing.
+- Connect the Claims component with a restricted database role. Permit only the table operations required by the component, and deny `UPDATE` and `DELETE` on `claim_versions`.
+
+**Example**
+
+1. Ana signs in, and her authenticated session identifies her as River Dental's `BILLING_COORDINATOR`.
+2. Ana calls the claim-approval API, which requires `claim:approve`.
+3. Her role contains that permission, so the request proceeds using River Dental's tenant context.
+4. A `READ_ONLY` user making the same request receives `403 Forbidden`; no database write is attempted.
+
+Tenant isolation controls which organization's rows are reachable. Application permissions control which user actions are allowed. Database permissions prevent the Claims component from performing prohibited table operations even if application code is incorrect.
 
 ### Safe processing
 
