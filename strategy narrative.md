@@ -8,7 +8,7 @@ For example, after a dentist completes a $200 filling, the billing coordinator c
 
 ## Why It Is Important
 
-Billing staff lack one reliable workflow to create an accurate claim, track it through the insurer's decision, and record the correct financial outcome. The work can span the practice-management system, clearinghouse, insurer portal, payment explanation, and bank record, each updating at a different time. Staff repeatedly search, compare, enter, and recheck information while handling rejections, delays, denials, partial payments, duplicates, corrections, and reversals. A missed rejection delays payment, a duplicate posting overstates collections, and an incorrect adjustment can produce the wrong patient bill.
+Billing staff lack one reliable workflow to create an accurate claim, track it through the insurer's decision, and record the correct financial outcome. The work can span PbN's PMS, the clearinghouse, the insurer portal, the payment explanation, and the bank record, each updating at a different time. Staff repeatedly search, compare, enter, and recheck information while handling rejections, delays, denials, partial payments, duplicates, corrections, and reversals. A missed rejection delays payment, a duplicate posting overstates collections, and an incorrect adjustment can produce the wrong patient bill.
 
 Practice by Numbers (PbN) already helps dental practices manage analytics, patient communication, scheduling, forms, insurance verification, and patient payments.<sup>6</sup> Claims & Ledger would connect these capabilities to the missing workflow between completed treatment and the final balance. This would expand PbN from showing practices how their business is performing to helping them operate the workflow that produces revenue.
 
@@ -32,7 +32,7 @@ Initially, PbN will focus on the Claims & Ledger needs common to all three segme
 
 ## Target Customer and Users
 
-The initial target customer is a U.S. multi-location dental group that accepts insurance, uses PbN's practice-management system, and centralizes some or all insurance billing. This segment has enough claim volume and cross-location handoffs to benefit from automation, while its systems and processes are more consistent than those of an enterprise DSO. Designing for organization, practice, and location boundaries also creates a path to serve independent practices and enterprise DSOs later.
+The initial target customer is a U.S. multi-location dental group that accepts insurance, uses PbN as its dental PMS, and centralizes some or all insurance billing. This segment has enough claim volume and cross-location handoffs to benefit from automation, while its systems and processes are more consistent than those of an enterprise DSO. Designing for organization, practice, and location boundaries also creates a path to serve independent practices and enterprise DSOs later.
 
 The buyer is the owner or operations leader, who needs predictable collections, lower administrative cost, and consistent processes across locations.
 
@@ -158,6 +158,8 @@ The resulting scope supports primary completed-treatment claims through one clea
 
 | Term | Plain-language definition |
 |---|---|
+| ADA (American Dental Association) | The U.S. professional association that publishes the standard dental claim form and maintains CDT procedure codes. |
+| X12 | The organization and electronic transaction standards used to exchange healthcare information, including 837D claims, 276/277 claim status, and 835 remittance. |
 | Provider | The dentist or dental organization that delivers treatment and bills for it. |
 | Payer or insurer | The insurance company responsible for deciding and paying a covered claim. |
 | Claim | A request from a dental practice to an insurer for payment for completed treatment. |
@@ -174,10 +176,11 @@ The resulting scope supports primary completed-treatment claims through one clea
 | 837D | The standard electronic transaction used to submit a dental claim. |
 | 276/277 | The paired electronic transactions used to request and receive a claim's current status. |
 | Acknowledgement | A response confirming that a clearinghouse or insurer received and accepted or rejected a transaction. It is not a payment decision. |
-| Rejection | A claim returned before payment review because required data or formatting is invalid. The practice can correct and resubmit it. |
+| Rejection | A claim returned before payment review because required information or formatting is invalid. Staff correct the problem and resubmit the claim. |
 | Adjudication | The insurer's process for deciding what it will pay, adjust, deny, or assign to the patient. |
-| Denial | An insurer's decision not to pay all or part of an adjudicated claim. |
-| Partial payment | Payment of less than the amount submitted on the claim. |
+| Denial | An insurer's decision, after reviewing a claim, not to pay all or part of it. Staff determine whether to correct, follow up, appeal, or transfer the allowed responsibility. |
+| Partial payment | An insurer pays less than the billed amount and explains how the remainder was adjusted, denied, or assigned to the patient. PbN must post each component rather than treat the difference as unexplained. |
+| Duplicate | The same claim submission or remittance arrives more than once. PbN retains the repeated event for audit but prevents a second submission or financial posting. |
 | Clean claim | A complete and valid claim that can be processed without requesting corrections or missing information. |
 | Claim attachment | Supporting material, such as an X-ray or clinical note, submitted with or linked to a claim. |
 | Claim-status inquiry | A request asking an insurer where a submitted claim is in its process. |
@@ -203,9 +206,9 @@ The resulting scope supports primary completed-treatment claims through one clea
 | Posting | Recording a payment, adjustment, or other financial event in the ledger. |
 | Automatic posting | Software records the insurer's decision without staff entry because the claim, procedures, and amounts match defined rules. |
 | Manual posting | A staff member reviews and records the insurer's decision. |
-| Unmatched remittance | A payment explanation that the system cannot confidently connect to the correct claim or procedure. |
+| Unmatched remittance | PbN cannot reliably connect an insurer's payment explanation to the correct claim and procedure lines. It creates a staff-review task without changing the ledger. |
 | Adjustment | A change to the amount the practice expects to collect without receiving a payment. |
-| Reversal | A new entry that cancels the financial effect of an earlier entry while preserving its history. |
+| Reversal | An insurer cancels or changes an earlier financial decision. PbN preserves the original entries and records new entries that reverse their financial effect. |
 | Immutable | Already-recorded financial entries cannot be edited or deleted; corrections use new entries. |
 | Double-entry ledger | A ledger in which every financial event creates equal debit and credit amounts, keeping the accounts balanced. |
 | Debit and credit | The two sides of a double-entry record. Their effect depends on the account being updated. |
@@ -218,8 +221,8 @@ The resulting scope supports primary completed-treatment claims through one clea
 
 | Term | Plain-language definition |
 |---|---|
-| Practice-management system (PMS) | The dental office's core software for patient records, treatment, scheduling, billing, and existing balances. |
-| Dental support organization (DSO) | An organization that provides business and administrative services to multiple affiliated dental practices. |
+| Practice-management system (PMS) | The dental office's core software for patient records, treatment, scheduling, billing, and balances. PbN is the PMS in this design. |
+| DSO (dental support organization) | An organization that provides shared business and administrative services to multiple affiliated dental practices. |
 | Organization | The customer account that may own or manage one or more dental practices. |
 | Practice | A dental business or operating unit within an organization. |
 | Location | A physical office where a practice treats patients. |

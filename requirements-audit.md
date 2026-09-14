@@ -2,30 +2,30 @@
 
 ## Purpose
 
-No submission draft exists. This document maps PbN's requirements to the final six-page PRFAQ and its appendices. The Day 1 strategy narrative is an internal decision artifact created from scratch; it establishes the decisions used in the PRFAQ and is not submitted separately.
+This document maps PbN's requirements to the final Product and Technical Specification and its appendices. The Day 1 strategy narrative is an internal decision artifact; it establishes the decisions used in the final specification and is not submitted separately.
 
 ## Deliverable map
 
-| Requirement | Main PRFAQ | Appendix evidence | Priority |
+| Requirement | Final specification | Appendix evidence | Priority |
 |---|---|---|---|
-| Customer problem, primary users, and responsibilities | Press release + Product FAQ | Roles and permissions table | Must-have |
-| Create, submit, track, remit, post, and update balances | Press release + Product FAQ | End-to-end sequence | Must-have |
-| V1 scope, later scope, and rationale | Product FAQ | Scope table | Must-have |
-| Success metrics | Press release + Product FAQ | Metric definitions and guardrails | Must-have |
-| Included and deferred edge cases | Product FAQ | Edge-case matrix | Must-have |
-| Sources of truth and service boundaries | Technical FAQ | Architecture and data-flow diagram | Must-have |
-| Synchronous calls, events, and consistency | Technical FAQ | End-to-end sequence | Must-have |
-| Organization, practice, location, and tenant isolation | Technical FAQ | Tenancy and authorization controls | Must-have |
-| Ledger choice, reversals, and balance derivation | Financial FAQ | Balanced journal examples | Must-have |
-| Entities, fields, relationships, indexes, and constraints | Technical FAQ summary | Entity-relationship model and schema table | Must-have |
-| Seven APIs with requests, responses, idempotency, and errors | Technical FAQ summary | API contract table and examples | Must-have |
-| Duplicate ERA and clearinghouse callbacks | Reliability FAQ | Idempotency matrix | Must-have |
-| Concurrent posting and partial failure | Reliability FAQ | Failure sequence and recovery matrix | Must-have |
-| Drift detection, monitoring, and repair | Reliability FAQ | Reconciliation matrix | Must-have |
-| Feature flags and progressive rollout | Launch FAQ | Rollout stages and exit criteria | Must-have |
-| Migration and production validation | Launch FAQ | Migration and shadow-validation plan | Must-have |
-| Day-one instrumentation | Product + Launch FAQs | Metric definitions, thresholds, and owners | Must-have |
-| Three to ten assumptions, exclusions, and AI disclosure | Final FAQ | None unless detail is necessary | Must-have |
+| Customer problem, primary users, and responsibilities | Strategy context and functional requirements | Roles and permissions table | Must-have |
+| Create, submit, track, remit, post, and update balances | Functional requirements | End-to-end sequence | Must-have |
+| V1 scope, later scope, and rationale | Selected initial scope and deferred scope | Scope table | Must-have |
+| Success metrics | Rollout and success metrics | Metric definitions and guardrails | Must-have |
+| Included and deferred edge cases | Functional requirements and deferred scope | Edge-case matrix | Must-have |
+| Sources of truth and service boundaries | System architecture | Architecture and data-flow diagram | Must-have |
+| Synchronous calls, events, and consistency | System architecture | End-to-end sequence | Must-have |
+| Organization, practice, location, and tenant isolation | Non-functional requirements and architecture | Tenancy and authorization controls | Must-have |
+| Ledger choice, reversals, and balance derivation | Ledger and balance design | Balanced journal examples | Must-have |
+| Entities, fields, relationships, indexes, and constraints | Core data model | Entity-relationship model and schema table | Must-have |
+| Seven APIs with requests, responses, idempotency, and errors | API contracts | API contract table and examples | Must-have |
+| Duplicate ERA and clearinghouse callbacks | Non-functional requirements | Idempotency matrix | Must-have |
+| Concurrent posting and partial failure | Non-functional requirements | Failure sequence and recovery matrix | Must-have |
+| Drift detection, monitoring, and repair | Non-functional requirements | Reconciliation matrix | Must-have |
+| Feature flags and progressive rollout | Rollout plan | Rollout stages and exit criteria | Must-have |
+| Migration and production validation | Rollout plan | Migration and shadow-validation plan | Must-have |
+| Day-one instrumentation | Rollout and success metrics | Metric definitions, thresholds, and owners | Must-have |
+| Three to ten assumptions, exclusions, and AI disclosure | Assumptions, deferred scope, trade-offs, and AI usage | None unless detail is necessary | Must-have |
 
 ## Evaluation map
 
