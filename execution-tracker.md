@@ -10,7 +10,7 @@ Produce a defensible PbN Claims & Ledger V1 Product and Technical Specification 
 |---|---|---:|---:|---|
 | 2026-09-14 | Day 2: Claim preparation deep dive | 3.75h | 12.25h | Review the completed Claim-preparation specification for consistency, then add the minimum end-to-end coverage required by the brief. |
 
-Latest work block: combined the tenant definition, tenancy model, and tenant-owned-data explanation under one proposed tenancy model subsection.
+Latest work block: simplified tenant isolation around one core RLS rule and added concise policy and transaction examples showing how CRUD operations are scoped to one organization.
 
 Update this row and the phase status after every work block.
 

@@ -338,7 +338,7 @@ This append-only table explains who or what created, changed, validated, or appr
 
 ## Tenant Isolation, Access Control, and Safe Processing
 
-### Proposed tenancy model
+### Tenancy model
 
 The above is a shared-database, shared-schema model. Claims for all customer organizations are stored in one physical `claims` table; no separate copy of the table is created for each organization. Every tenant-owned row contains `organization_id`, which is included in its primary and foreign keys. The database access boundary is enforced through PostgreSQL row-level security, while permitted user actions are enforced through application authorization.
 
@@ -354,42 +354,63 @@ Assume `patient-900` belongs to Lake Dental as `(org-002, patient-900)`. If a Ri
 
 Tenant isolation prevents one organization from reading, creating, changing, deleting, or referencing another organization's data.
 
-**Proposed solution**
+**Core rule.** Every tenant-owned row has an `organization_id`, and every database transaction has one trusted `organization_id` in its context. Row-level security allows the transaction to see or change only rows whose value matches that context.<sup>11</sup>
 
-- Carry `organization_id` from the authenticated user to every database transaction, tenant-owned row, relationship, query, event, and audit record.
-- Use PostgreSQL row-level security to restrict reads and writes to the transaction's organization.<sup>11</sup>
-- Use composite foreign keys containing `organization_id` to prevent relationships between different organizations.
+For example, when Ana works in River Dental, the transaction context is set to River Dental's organization ID. `SELECT`, `UPDATE`, and `DELETE` can see only River Dental's rows. `INSERT` can create only River Dental rows. Lake Dental's rows remain invisible and cannot be changed.
 
-**How it works**
+**Row-level security policy**
 
-1. The user's identity and organization membership are verified during sign-in.
-2. The organization is derived from the authenticated session; it is not accepted from the browser.
-3. A database transaction is started with that organization as its transaction-local context. Ana's context at River Dental is `org-001`.
-4. The row-level security `USING` rule exposes only rows whose `organization_id` matches `org-001` during reads, updates, and deletes.
-5. The `WITH CHECK` rule rejects inserts or updates assigned to a different organization.
-6. Composite foreign keys reject relationships to records belonging to another organization.
-7. The tenant context expires when the transaction ends, so a pooled connection cannot carry River Dental's context into a later Lake Dental request.
+```sql
+ALTER TABLE claims ENABLE ROW LEVEL SECURITY;
+ALTER TABLE claims FORCE ROW LEVEL SECURITY;
 
-**Examples**
+CREATE POLICY claims_by_organization ON claims
+USING (
+    organization_id = current_setting('app.organization_id', true)::uuid
+)
+WITH CHECK (
+    organization_id = current_setting('app.organization_id', true)::uuid
+);
+```
 
-- **Unauthorized read:** Ana requests Lake Dental's `claim-900`. The claim belongs to `org-002`, so row-level security exposes no row and the application returns `404 Not Found`.
-- **Wrong-tenant write:** A request attempts to insert a claim with `organization_id = org-002` while the transaction context is `org-001`. The `WITH CHECK` rule rejects the insert.
-- **Cross-tenant relationship:** A River Dental claim retains `org-001` but references a Lake Dental patient. The composite foreign key rejects the relationship because patient `(org-001, patient-900)` does not exist.
+`USING` restricts which rows can be selected, updated, or deleted. `WITH CHECK` restricts which rows can be inserted or updated.
+
+**Transaction example**
+
+```sql
+BEGIN;
+
+-- River Dental's actual organization UUID
+SET LOCAL app.organization_id =
+    '11111111-1111-1111-1111-111111111111';
+
+SELECT * FROM claims;
+-- Returns only River Dental claims.
+
+INSERT INTO claims (organization_id, claim_id)
+VALUES (
+    '22222222-2222-2222-2222-222222222222',
+    '33333333-3333-3333-3333-333333333333'
+);
+-- Rejected because the inserted organization does not match the context.
+
+COMMIT;
+```
+
+The organization ID is derived from the authenticated session and set by the backend; it is not accepted from the browser. `SET LOCAL` keeps the context within one transaction, so a pooled connection cannot carry River Dental's context into a later Lake Dental request. Composite foreign keys provide an additional check by preventing a River Dental record from referencing a Lake Dental record.
 
 **Required rules**
 
-- `organization_id` is required on every tenant-owned record and is never accepted from the browser.
-- Row-level security is enabled and forced on every tenant-owned table.
-- The Claims component uses a restricted database role that is neither a superuser nor permitted to bypass row-level security.
-- Every tenant-owned primary key, foreign key, unique constraint, index, query, event, and audit record includes `organization_id`.
-- Automated tests must fail the release if a cross-tenant read, write, or relationship succeeds.
+- Enable and force row-level security on every tenant-owned table.
+- Use a restricted application database role without superuser or `BYPASSRLS` privileges.
+- Include `organization_id` in tenant-owned keys, relationships, indexes, events, and audit records.
+- Reject a release if automated tests can read, write, or relate records across organizations.
 
 **Limitations**
 
-- Row-level security trusts the organization context established by the backend. An incorrect user-to-organization mapping produces an incorrect boundary.
-- Row-level security does not determine what a user may do within an organization; role-based access control provides that protection.
-- Superusers and roles with `BYPASSRLS` can bypass the policy and must not be used by application services.
-- Every new tenant-owned table must enable the policy; an omitted policy creates an isolation gap.
+- Row-level security depends on the backend setting the correct organization context.
+- It isolates organizations but does not control actions within one organization; role-based access control handles those permissions.
+- A tenant-owned table without a row-level security policy creates an isolation gap.
 
 ### Access control
 
@@ -398,14 +419,6 @@ Tenant isolation answers, â€œWhich organization's data can this request reach?â€
 ### Safe processing
 
 Safe processing applies the same boundary to work performed without a signed-in user, such as `ProcedureCompleted` events, retries, and scheduled jobs. `organization_id`, the table-specific record ID, and a request identifier are included in every message. Each message is validated before a transaction is started with the specified organization as its database context. Both the organization and record identifiers are used in every lookup. Duplicate or conflicting effects are prevented through the uniqueness, idempotency, concurrency, and audit controls defined in the next section.
-
-### Example request
-
-1. Ana's membership in River Dental and her `BILLING_COORDINATOR` role are verified when she signs in.
-2. When Ana approves `claim-001`, the claim ID and idempotency key are sent by the browser; `organization_id` and Ana's role are not supplied by the browser.
-3. `org-001` and Ana's role are derived from her authenticated session. The approval is authorized, and `org-001` is assigned as the database context for the transaction.
-4. Access to River Dental's `claim-001` is permitted by row-level security, while claims belonging to every other organization remain hidden.
-5. The claim's relationships are validated through composite keys, and one immutable version and audit event are created by the approval transaction. A retry with the same idempotency key returns the existing version instead of creating another.
 
 ## Database Integrity, Indexes, and Concurrency
 
