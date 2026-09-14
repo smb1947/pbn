@@ -10,7 +10,7 @@ Produce a defensible PbN Claims & Ledger V1 Product and Technical Specification 
 |---|---|---:|---:|---|
 | 2026-09-14 | Day 2: Claim preparation deep dive | 3.75h | 12.25h | Review the completed Claim-preparation specification for consistency, then add the minimum end-to-end coverage required by the brief. |
 
-Latest work block: combined tenant isolation and row-level security into one section covering the enforcement flow, read and relationship examples, mandatory implementation rules, and limitations.
+Latest work block: reformatted tenant isolation into a scannable definition, proposed solution, enforcement sequence, examples, required rules, and limitations.
 
 Update this row and the phase status after every work block.
 

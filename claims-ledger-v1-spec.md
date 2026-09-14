@@ -356,15 +356,44 @@ Assume `patient-900` belongs to Lake Dental as `(org-002, patient-900)`. If a Ri
 
 ### Tenant isolation
 
-Tenant isolation prevents one organization from reading, creating, changing, deleting, or referencing another organization's data. In the proposed shared-table model, isolation is provided by carrying `organization_id` from the authenticated user to every application request, database transaction, row, and relationship. Application authorization establishes the tenant, PostgreSQL row-level security restricts row access, and composite foreign keys prevent cross-tenant relationships.<sup>11</sup>
+**Definition.** Tenant isolation prevents one organization from reading, creating, changing, deleting, or referencing another organization's data.
 
-The browser sends the requested record ID but cannot select `organization_id`. After the user's identity is verified, the organization is derived from the authenticated session. A database transaction is then started with that organization as its transaction-local tenant context. For Ana at River Dental, the context is `org-001`. A row-level security policy compares every row's `organization_id` with `org-001`. Its `USING` rule hides rows from other organizations during reads, updates, and deletes; its `WITH CHECK` rule rejects inserts or updates assigned to another organization.
+**Proposed solution**
 
-For example, if Ana requests Lake Dental's `claim-900`, row-level security finds no visible row because the claim belongs to `org-002`; the application returns `404 Not Found`. If an insert assigns a new claim to `org-002` while the transaction context is `org-001`, the policy's `WITH CHECK` rule rejects it. If the claim retains `org-001` but references Lake Dental's patient, the composite foreign-key rule described above rejects that relationship. Row-level security protects access to rows, while composite foreign keys protect relationships between rows.
+- Carry `organization_id` from the authenticated user to every database transaction, tenant-owned row, relationship, query, event, and audit record.
+- Use PostgreSQL row-level security to restrict reads and writes to the transaction's organization.<sup>11</sup>
+- Use composite foreign keys containing `organization_id` to prevent relationships between different organizations.
 
-Four rules are applied to every tenant-owned table. `organization_id` is required and is never accepted from the browser. Row-level security is enabled and forced. The Claims component uses a restricted database role that is neither a superuser nor permitted to bypass row-level security. Every tenant-owned primary key, foreign key, unique constraint, index, query, event, and audit record includes `organization_id`. The tenant context expires when the transaction ends, preventing a pooled connection from carrying River Dental's context into a later Lake Dental request.
+**How it works**
 
-This design has limits. Row-level security trusts the organization context established by the backend, so the mapping from the authenticated user to `organization_id` must be correct. It does not determine whether Ana may approve a claim; role-based access control handles permissions within River Dental. Superusers and roles with `BYPASSRLS` can bypass row-level security, so application services cannot receive those privileges. Each new tenant-owned table must enable the policy; automated tests must fail a release when cross-tenant reads, writes, or relationships succeed.
+1. The user's identity and organization membership are verified during sign-in.
+2. The organization is derived from the authenticated session; it is not accepted from the browser.
+3. A database transaction is started with that organization as its transaction-local context. Ana's context at River Dental is `org-001`.
+4. The row-level security `USING` rule exposes only rows whose `organization_id` matches `org-001` during reads, updates, and deletes.
+5. The `WITH CHECK` rule rejects inserts or updates assigned to a different organization.
+6. Composite foreign keys reject relationships to records belonging to another organization.
+7. The tenant context expires when the transaction ends, so a pooled connection cannot carry River Dental's context into a later Lake Dental request.
+
+**Examples**
+
+- **Unauthorized read:** Ana requests Lake Dental's `claim-900`. The claim belongs to `org-002`, so row-level security exposes no row and the application returns `404 Not Found`.
+- **Wrong-tenant write:** A request attempts to insert a claim with `organization_id = org-002` while the transaction context is `org-001`. The `WITH CHECK` rule rejects the insert.
+- **Cross-tenant relationship:** A River Dental claim retains `org-001` but references a Lake Dental patient. The composite foreign key rejects the relationship because patient `(org-001, patient-900)` does not exist.
+
+**Required rules**
+
+- `organization_id` is required on every tenant-owned record and is never accepted from the browser.
+- Row-level security is enabled and forced on every tenant-owned table.
+- The Claims component uses a restricted database role that is neither a superuser nor permitted to bypass row-level security.
+- Every tenant-owned primary key, foreign key, unique constraint, index, query, event, and audit record includes `organization_id`.
+- Automated tests must fail the release if a cross-tenant read, write, or relationship succeeds.
+
+**Limitations**
+
+- Row-level security trusts the organization context established by the backend. An incorrect user-to-organization mapping produces an incorrect boundary.
+- Row-level security does not determine what a user may do within an organization; role-based access control provides that protection.
+- Superusers and roles with `BYPASSRLS` can bypass the policy and must not be used by application services.
+- Every new tenant-owned table must enable the policy; an omitted policy creates an isolation gap.
 
 ### Access control
 
