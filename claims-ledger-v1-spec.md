@@ -350,7 +350,9 @@ A tenant is one customer organization. River Dental and Lake Dental may share th
 
 Tenant-owned data is a record that belongs to exactly one organization, so `organization_id` is included in each record.
 
-For example, Ana is creating a claim for River Dental, whose authenticated organization is `org-001`. A software defect supplies `patient-900`, a patient belonging to Lake Dental (`org-002`), instead of River Dental's `patient-001`. The proposed `patients` primary key is `(organization_id, patient_id)`, and the proposed `claims` foreign key is `(organization_id, patient_id) → patients (organization_id, patient_id)`. The new claim therefore tries to reference patient `(org-001, patient-900)`. Only `(org-002, patient-900)` exists, so the composite foreign-key check finds no valid River Dental patient and rejects the entire claim-creation transaction. No claim is created and Lake Dental's patient is unchanged. Row-level security provides an earlier read boundary: while the database context is `org-001`, a query for `patient-900` cannot return Lake Dental's row. The composite foreign key remains the final write safeguard if an incorrect ID reaches the insert.
+For example, a patient is identified in `patients` by the composite primary key `(organization_id, patient_id)`, while a claim is identified in `claims` by `(organization_id, claim_id)`. A claim also stores `(organization_id, patient_id)` as a composite foreign key to `patients`. This foreign key verifies that the claim and patient belong to the same organization.
+
+Assume `patient-900` belongs to Lake Dental as `(org-002, patient-900)`. If a River Dental claim tries to reference that patient as `(org-001, patient-900)`, the database looks for the exact patient pair `(org-001, patient-900)`. That pair does not exist, so the claim is rejected. `(organization_id, patient_id)` is not used as the claim's primary key because one patient can have multiple claims; each claim therefore needs its own `claim_id`.
 
 ### Tenant isolation
 

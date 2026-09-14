@@ -10,7 +10,7 @@ Produce a defensible PbN Claims & Ledger V1 Product and Technical Specification 
 |---|---|---:|---:|---|
 | 2026-09-14 | Day 2: Claim preparation deep dive | 3.75h | 12.25h | Review the completed Claim-preparation specification for consistency, then add the minimum end-to-end coverage required by the brief. |
 
-Latest work block: replaced the vague tenant-key example with a concrete cross-organization claim-creation failure showing the row-level read boundary, composite foreign-key validation, and transaction outcome.
+Latest work block: added a simple tenant-owned-data example distinguishing the claim's composite primary key from its composite patient foreign key and showing how a cross-organization relationship is rejected.
 
 Update this row and the phase status after every work block.
 
