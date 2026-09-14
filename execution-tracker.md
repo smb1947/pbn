@@ -10,7 +10,7 @@ Produce a defensible PbN Claims & Ledger V1 Product and Technical Specification 
 |---|---|---:|---:|---|
 | 2026-09-14 | Day 2: Claim preparation deep dive | 3.75h | 12.25h | Review the completed Claim-preparation specification for consistency, then add the minimum end-to-end coverage required by the brief. |
 
-Latest work block: replaced the access-control summary with an explicit role-to-permission model, API authorization flow, denial behavior, and database-role backstop.
+Latest work block: limited access control to cross-tenant isolation: IAM verifies user-to-organization membership and sets the trusted tenant context, while row-level security blocks access to other organizations' rows. Within-organization role permissions were removed from this section.
 
 Update this row and the phase status after every work block.
 

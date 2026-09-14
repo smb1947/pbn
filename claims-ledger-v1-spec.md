@@ -336,11 +336,11 @@ This append-only table explains who or what created, changed, validated, or appr
 | `details` | `jsonb` | Required event facts; must not contain secret credentials | `{"claim_version_id":"claim-version-001","version_number":1}` |
 | `occurred_at` | `timestamptz` | Required; PbN server time in UTC | `2026-09-13T16:10:00Z` |
 
-## Tenant Isolation, Access Control, and Safe Processing
+## Tenant Isolation and Access Control
 
 ### Tenancy model
 
-The above is a shared-database, shared-schema model. Claims for all customer organizations are stored in one physical `claims` table; no separate copy of the table is created for each organization. Every tenant-owned row contains `organization_id`, which is included in its primary and foreign keys. The database access boundary is enforced through PostgreSQL row-level security, while permitted user actions are enforced through application authorization.
+The above is a shared-database, shared-schema model. Claims for all customer organizations are stored in one physical `claims` table; no separate copy of the table is created for each organization. Every tenant-owned row contains `organization_id`, which is included in its primary and foreign keys. Application IAM identifies the user's organization, and PostgreSQL row-level security prevents access to every other organization's rows.
 
 A tenant is one customer organization. River Dental and Lake Dental may share the same application and database infrastructure, but each is treated as a separate tenant. The tenant boundary is represented by an `organizations` row. A small practice may be represented by one organization and one location; a dental group may be represented by one organization containing several practices and locations.
 
@@ -353,6 +353,8 @@ Assume `patient-900` belongs to Lake Dental as `(org-002, patient-900)`. If a Ri
 ### Tenant isolation
 
 Tenant isolation prevents one organization from reading, creating, changing, deleting, or referencing another organization's data.
+
+**Application-level access control.** IAM verifies that the user is registered and identifies the organizations to which the user belongs. When an organization is selected, the backend confirms that membership and derives the trusted `organization_id` from the authenticated session. The browser cannot set an unauthorized organization. The derived value becomes the database transaction's tenant context.
 
 **Core rule.** Every tenant-owned row has an `organization_id`, and every database transaction has one trusted `organization_id` in its context. Row-level security allows the transaction to see or change only rows whose value matches that context.<sup>11</sup>
 
@@ -402,28 +404,9 @@ The organization ID is derived from the authenticated session and set by the bac
 **Limitations**
 
 - Row-level security depends on the backend setting the correct organization context.
-- It isolates organizations but does not control actions within one organization; role-based access control handles those permissions.
+- Permissions among users within the same organization are outside this tenant-isolation design.
+- The application database connection must not be permitted to bypass row-level security.
 - A tenant-owned table without a row-level security policy creates an isolation gap.
-
-### Access control
-
-Access control determines what an authenticated user may do with records inside the user's organization.
-
-**Proposed solution**
-
-- Map each `users.role` to explicit permissions. `BILLING_COORDINATOR` and `ORG_ADMIN` receive `claim:approve`; `READ_ONLY` receives only `claim:read`.
-- Require one permission on every API operation. `POST /v1/claims/{claim_id}/approve` requires `claim:approve`.
-- Return `403 Forbidden` before accessing the database when the required permission is missing.
-- Connect the Claims component with a restricted database role. Permit only the table operations required by the component, and deny `UPDATE` and `DELETE` on `claim_versions`.
-
-**Example**
-
-1. Ana signs in, and her authenticated session identifies her as River Dental's `BILLING_COORDINATOR`.
-2. Ana calls the claim-approval API, which requires `claim:approve`.
-3. Her role contains that permission, so the request proceeds using River Dental's tenant context.
-4. A `READ_ONLY` user making the same request receives `403 Forbidden`; no database write is attempted.
-
-Tenant isolation controls which organization's rows are reachable. Application permissions control which user actions are allowed. Database permissions prevent the Claims component from performing prohibited table operations even if application code is incorrect.
 
 ### Safe processing
 
