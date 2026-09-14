@@ -10,7 +10,7 @@ Produce a defensible PbN Claims & Ledger V1 Product and Technical Specification 
 |---|---|---:|---:|---|
 | 2026-09-14 | Day 2: Claim preparation deep dive | 3.75h | 12.25h | Review the completed Claim-preparation specification for consistency, then add the minimum end-to-end coverage required by the brief. |
 
-Latest work block: removed approval idempotency from the claim-preparation design, including its key, schema field, index, API header, retry behavior, and NFR. Approval now relies on the `DRAFT` state check, `row_version`, and one atomic transaction.
+Latest work block: removed the standalone database-integrity, indexes, and concurrency section. The product requirements remain the source of expected behavior; implementation details remain only where needed in the schema, API contract, and NFRs.
 
 Update this row and the phase status after every work block.
 

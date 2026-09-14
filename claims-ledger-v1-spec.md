@@ -410,23 +410,6 @@ The organization ID is derived from the authenticated session and set by the bac
 
 The same tenant boundary applies to system work such as `ProcedureCompleted` events and scheduled jobs. Every message carries `organization_id`, the record ID, and a request identifier. The worker validates the message, sets the database transaction to that organization, and uses both identifiers in every lookup. Uniqueness constraints, concurrency checks, atomic transactions, and audit records prevent duplicate, conflicting, or partial changes.
 
-## Database Integrity, Indexes, and Concurrency
-
-| Control | Database definition | Behavior guaranteed |
-|---|---|---|
-| Tenant keys | Each tenant-owned table uses a composite primary key containing `organization_id` and its table-specific ID, such as `(organization_id, claim_id)` for `claims`. Every foreign key includes both identifiers. | A record cannot reference another organization's data. |
-| Claim number | Unique index on `claims (organization_id, claim_number)` | Two claims in one organization cannot display the same claim number. |
-| One prepared line per procedure | Unique index on `claim_lines (organization_id, procedure_id)` | Replaying `ProcedureCompleted` returns the existing claim line instead of billing the procedure twice. This constraint applies to the initial primary-claim scope. |
-| Line order | Unique index on `claim_lines (organization_id, claim_id, line_number)` | A claim cannot contain two lines with the same display and transmission sequence. |
-| Version sequence | Unique index on `claim_versions (organization_id, claim_id, version_number)` | Concurrent approvals cannot create two versions with the same version number. |
-| Draft work queue | Index on `claims (organization_id, processing_status, updated_at)` | The preparation queue can find an organization's oldest `DRAFT` claims without scanning other tenants or states. |
-| Audit history | Index on `claim_audit_events (organization_id, claim_id, occurred_at)` | The claim history can be retrieved in chronological order. |
-| Concurrent edits | Update `claims` only when the supplied `row_version` equals the stored value, then increment it | The first valid edit or approval succeeds; a stale request receives the current version and changes nothing. |
-| Atomic approval | In one transaction, lock the claim, verify `DRAFT`, validate it, insert `claim_versions` and `claim_audit_events`, change the claim to `READY`, and increment `row_version` | A failure commits either the entire approval or none of it. |
-| Immutable approval | Deny update and delete operations on `claim_versions`; retain foreign keys with `ON DELETE RESTRICT` | Approved values and their audit evidence cannot be overwritten or removed. |
-
-The unique procedure constraint prevents the same procedure from being added to two claim lines. `row_version` prevents one user from overwriting another user's changes, while the atomic approval transaction prevents a partially created claim version.
-
 ## API Contract
 
 | Operation | Request | Successful result | Duplicate and concurrency protection | Failure result |
