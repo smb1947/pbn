@@ -8,9 +8,9 @@ Produce a defensible PbN Claims & Ledger V1 Product and Technical Specification 
 
 | Updated | Current phase | Used | Remaining | Next action |
 |---|---|---:|---:|---|
-| 2026-09-13 | Day 2: Claim preparation deep dive | 3.75h | 12.25h | Review the completed Claim-preparation specification for consistency, then add the minimum end-to-end coverage required by the brief. |
+| 2026-09-14 | Day 2: Claim preparation deep dive | 3.75h | 12.25h | Review the completed Claim-preparation specification for consistency, then add the minimum end-to-end coverage required by the brief. |
 
-Latest work block: completed the Claim-preparation workflow, UX, system boundary, APIs, non-functional requirements, rollout, metrics, and database controls for tenant isolation, idempotency, concurrency, atomic approval, and immutability.
+Latest work block: defined the shared-table tenancy model and the application and database controls for tenant isolation, role-based access, and safe asynchronous processing.
 
 Update this row and the phase status after every work block.
 

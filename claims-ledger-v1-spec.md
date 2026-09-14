@@ -336,11 +336,25 @@ This append-only table explains who or what created, changed, validated, or appr
 | `details` | `jsonb` | Required event facts; must not contain secret credentials | `{"claim_version_id":"claim-version-001","version_number":1}` |
 | `occurred_at` | `timestamptz` | Required; PbN server time in UTC | `2026-09-13T16:10:00Z` |
 
+## Tenant Isolation, Access Control, and Safe Processing
+
+A tenant is one PbN customer organization. River Dental and Lake Dental may use the same PbN application and database, but each is a separate tenant. Tenant-owned data is a record that belongs to one organization, such as a patient, procedure, claim, or claim version.
+
+PbN uses one shared set of tables for all organizations; it does not create a separate physical copy of each table for every organization. Each tenant-owned row contains `organization_id`, which separates one organization's rows from another's. This model keeps schema changes and operations consistent as PbN adds customers while the controls below prevent one organization from accessing another's rows.
+
+| Control | Meaning | Enforcement |
+|---|---|---|
+| Tenant isolation | A user, request, or relationship for River Dental cannot read, change, or reference Lake Dental's data. | The application derives `organization_id` from the authenticated session and never accepts it from the request body. PostgreSQL row-level security permits a database operation only when the row's `organization_id` matches the session's organization. Composite foreign keys include `organization_id`, so the database rejects cross-organization relationships even if application code is wrong. |
+| Access control | After PbN identifies the organization, it determines what the signed-in user may do within that organization. | The application checks the user's role before each action. A `BILLING_COORDINATOR` or `ORG_ADMIN` can approve a claim; a `READ_ONLY` user cannot. Database roles restrict the Claims component to its required tables, and approved versions cannot be updated or deleted. Access control therefore uses both application rules and database enforcement. |
+| Safe processing | A background event, retry, or scheduled job must process the intended organization's record exactly once without crossing tenant boundaries. | Every event and job carries `organization_id`, the entity-specific ID, and a request identifier. The worker establishes the database tenant context before reading or writing, uses both IDs in every lookup, applies the idempotency and concurrency controls below, and records the result in `claim_audit_events`. |
+
+For example, Ana signs in through River Dental. PbN maps her session to `organization_id = org-001` and role `BILLING_COORDINATOR`, then sets `org-001` as the database tenant context. Row-level security hides every row with a different `organization_id`; role authorization permits Ana to approve River Dental's claim; the database transaction and uniqueness constraints ensure that a retry creates no duplicate version.
+
 ## Database Integrity, Indexes, and Concurrency
 
 | Control | Database definition | Behavior guaranteed |
 |---|---|---|
-| Tenant key | Composite primary key `(organization_id, entity_id)` on every tenant-owned table; every foreign key includes `organization_id` | A record cannot reference another organization's data. |
+| Tenant keys | Each tenant-owned table uses a composite primary key containing `organization_id` and its table-specific ID, such as `(organization_id, claim_id)` for `claims`. Every foreign key includes both identifiers. | A record cannot reference another organization's data. |
 | Claim number | Unique index on `claims (organization_id, claim_number)` | Two claims in one organization cannot display the same claim number. |
 | One prepared line per procedure | Unique index on `claim_lines (organization_id, procedure_id)` | Replaying `ProcedureCompleted` returns the existing claim line instead of billing the procedure twice. This constraint applies to the initial primary-claim scope. |
 | Line order | Unique index on `claim_lines (organization_id, claim_id, line_number)` | A claim cannot contain two lines with the same display and transmission sequence. |
