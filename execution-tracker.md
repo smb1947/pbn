@@ -10,7 +10,7 @@ Produce a defensible PbN Claims & Ledger V1 Product and Technical Specification 
 |---|---|---:|---:|---|
 | 2026-09-14 | Day 2: Claim preparation deep dive | 3.75h | 12.25h | Review the completed Claim-preparation specification for consistency, then add the minimum end-to-end coverage required by the brief. |
 
-Latest work block: limited access control to cross-tenant isolation: IAM verifies user-to-organization membership and sets the trusted tenant context, while row-level security blocks access to other organizations' rows. Within-organization role permissions were removed from this section.
+Latest work block: removed approval idempotency from the claim-preparation design, including its key, schema field, index, API header, retry behavior, and NFR. Approval now relies on the `DRAFT` state check, `row_version`, and one atomic transaction.
 
 Update this row and the phase status after every work block.
 
@@ -59,7 +59,7 @@ There is no Day 1 page limit during discovery. Preserve important evidence, assu
 |---|---:|---|---|
 | Product and workflow design | 1.5h | In progress | Finalize users, workflows, functional requirements, scope, exclusions, metrics, and edge cases. |
 | Architecture and financial design | 2h | Not started | Finalize sources of truth, services, data flow, ledger entries, reversals, and balances. |
-| Data, APIs, and reliability | 1h | Not started | Finalize entities, contracts, idempotency, concurrency, and reconciliation. |
+| Data, APIs, and reliability | 1h | Not started | Finalize entities, contracts, duplicate protection, concurrency, and reconciliation. |
 | Tenancy, rollout, and assumptions | 0.5h | Not started | Finalize tenant isolation, security, rollout, migration, validation, risks, and assumptions. |
 | Review, refine, and submit | 3h | Not started | Red-team the scope, accounting, architecture, failure behavior, assumptions, and tradeoffs; fix gaps and ambiguity; verify completeness and PDF rendering; submit. |
 
@@ -70,7 +70,7 @@ There is no Day 1 page limit during discovery. Preserve important evidence, assu
 - Service-boundary and tenant-isolation diagram
 - Core data model with keys and uniqueness constraints
 - Balanced ledger examples, including a reversal
-- API and idempotency/error table
+- API, concurrency, and error table
 - Failure, reconciliation, rollout, and metrics matrix
 
 ## Final gates
