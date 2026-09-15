@@ -10,7 +10,7 @@ Produce a defensible PbN Claims & Ledger V1 Product and Technical Specification 
 |---|---|---:|---:|---|
 | 2026-09-14 | Day 2: Claim preparation deep dive | 3.75h | 12.25h | Review the completed Claim-preparation specification for consistency, then add the minimum end-to-end coverage required by the brief. |
 
-Latest work block: removed the standalone database-integrity, indexes, and concurrency section. The product requirements remain the source of expected behavior; implementation details remain only where needed in the schema, API contract, and NFRs.
+Latest work block: simplified the Claim-preparation boundaries into separate lists of five assumptions and five exclusions. Reliability requirements and rollout remain open; the product metrics still need a claim-creation integrity measure and a staff-effort measure.
 
 Update this row and the phase status after every work block.
 

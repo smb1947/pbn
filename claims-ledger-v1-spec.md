@@ -406,45 +406,6 @@ The organization ID is derived from the authenticated session and set by the bac
 - The application database connection must not be permitted to bypass row-level security.
 - A tenant-owned table without a row-level security policy creates an isolation gap.
 
-### Safe processing
-
-The same tenant boundary applies to system work such as `ProcedureCompleted` events and scheduled jobs. Every message carries `organization_id`, the record ID, and a request identifier. The worker validates the message, sets the database transaction to that organization, and uses both identifiers in every lookup. Uniqueness constraints, concurrency checks, atomic transactions, and audit records prevent duplicate, conflicting, or partial changes.
-
-## API Contract
-
-| Operation | Request | Successful result | Duplicate and concurrency protection | Failure result |
-|---|---|---|---|---|
-| Create or find draft | `POST /v1/procedures/{procedure_id}/claim-draft` with `coverage_id` | `200` with the existing claim or `201` with a new `DRAFT` claim | Unique `procedure_id` returns the existing claim after a retry | `422` when the procedure is not completed or has no eligible primary coverage |
-| Read draft | `GET /v1/claims/{claim_id}` | `200` with source values, claim lines, validation errors, and `row_version` | Read is scoped by authenticated `organization_id` | `404` for a missing or inaccessible claim |
-| Validate draft | `POST /v1/claims/{claim_id}/validate` with `expected_row_version` | `200` with `valid` and every field-level error | A stale `row_version` changes nothing | `409` with the current `row_version` when the draft changed |
-| Return to draft | `POST /v1/claims/{claim_id}/return-to-draft` with `expected_row_version` and reason | `200` with the claim in `DRAFT` | Repeating the request in `DRAFT` returns the current claim | `409` when the supplied version is stale |
-| Approve draft | `POST /v1/claims/{claim_id}/approve` with `expected_row_version` | `201` with the new immutable version | The `DRAFT` state check and `row_version` prevent repeated or stale approval | `409` for stale state; `422` with all blocking errors when validation fails |
-
-The service derives `organization_id` and `approved_by` from the authenticated session; clients cannot supply either value. Every state-changing response includes a request identifier that links the API call to its audit event.
-
-## Non-Functional Requirements
-
-| ID | Requirement | Acceptance condition |
-|---|---|---|
-| NFR-CP-01 | Every read, write, index, and relationship is scoped to the authenticated organization. | Automated authorization tests cannot read or mutate another organization's claim by changing any identifier. |
-| NFR-CP-02 | Edits and approvals use optimistic concurrency control. | When two users act on the same `row_version`, one succeeds and the other receives `409`; no value is silently overwritten. |
-| NFR-CP-03 | Approval is atomic and approved versions are immutable. | Forced failures at every approval step produce either no change or one complete version; update and delete attempts fail. |
-| NFR-CP-04 | Every state-changing action is auditable. | The history identifies the tenant, claim, actor or system, action, request, timestamp, and resulting version. |
-| NFR-CP-05 | Review and validation remain responsive during normal operation. | The claim detail and validation APIs complete within two seconds at p95 under the pilot's expected peak load. |
-
-## Rollout and Production Validation
-
-The first release runs in shadow mode for one organization: PbN assembles drafts without exposing them to staff, and the team compares every generated field with claims prepared through the existing process. The pilot then enables the preparation queue for selected billing coordinators at two locations. Expansion begins after the release gates below pass for two consecutive weeks. A feature flag can stop new draft creation without deleting claims, versions, or audit history already created.
-
-| Release gate | Target |
-|---|---:|
-| Completed insured procedures represented once in the generated draft set | 100% |
-| Approved snapshots matching the values displayed at approval | 100% |
-| Duplicate claim lines or claim versions under retry tests | 0 |
-| Lost updates under concurrent-edit tests | 0 |
-| Cross-organization access in automated security tests | 0 |
-| Ready claims rejected by the Submission stage for missing preparation data | Less than 1% |
-
 ## Product Metrics
 
 | Metric | Definition | Initial target |
@@ -452,12 +413,8 @@ The first release runs in shadow mode for one organization: PbN assembles drafts
 | Preparation completion rate | Claims reaching `READY` ÷ drafts created | At least 90% within one business day |
 | First-pass validation rate | Drafts with no blocking error on first billing review ÷ drafts reviewed | At least 85% |
 | Median preparation time | Time from procedure completion to `READY` | Less than four business hours |
-| Manual re-entry rate | Approved fields retyped without a source-record correction ÷ approved fields | Less than 1% |
-| Preparation-caused submission rejection rate | Submitted claims rejected for data that Claim preparation validates ÷ submitted claims | Less than 1% |
-
-## Assumptions and Exclusions
-
-This stage supports completed procedures billed to one primary insurer. Patient, coverage, provider, practice, location, procedure, and fee data already exist in PbN. Submission, claim-status tracking, remittance ingestion, ledger posting, balances, secondary and tertiary coverage, predeterminations, automated attachment selection, and historical-claim migration are outside this stage. Correcting a source value changes the approved claim only after the billing coordinator returns it to `DRAFT`, reruns validation, and approves a new version.
+| Manual re-entry rate | Approved fields retyped without a source-record correction ÷ approved fields | Less than 5% |
+ |
 
 ## References
 
