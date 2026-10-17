@@ -88,3 +88,5 @@ Moved the resume PDF and its extracted text copy to Trash at Shankar’s request
 Prepared the updated AGENTS.md and all workflow-lab files for commit and push in the parent repository. The workflow lab’s local Git metadata is preserved and excluded from the parent commit. Specification progress and focused-work-hour totals are unchanged.
 
 Added the assignment PDF to .gitignore and removed it from Git tracking while retaining the local file. Specification progress and focused-work-hour totals are unchanged.
+
+Added assignment.txt to .gitignore and removed both the root and tmp/pdfs copies from Git tracking while retaining the local files. Specification progress and focused-work-hour totals are unchanged.
