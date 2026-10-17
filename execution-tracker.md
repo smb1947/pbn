@@ -90,3 +90,5 @@ Prepared the updated AGENTS.md and all workflow-lab files for commit and push in
 Added the assignment PDF to .gitignore and removed it from Git tracking while retaining the local file. Specification progress and focused-work-hour totals are unchanged.
 
 Added assignment.txt to .gitignore and removed both the root and tmp/pdfs copies from Git tracking while retaining the local files. Specification progress and focused-work-hour totals are unchanged.
+
+Created README.md with linked summaries of the strategy narrative and the current claim-preparation specification, distinguishing the overall product scope from the stage covered in detail. Specification progress and focused-work-hour totals are unchanged.
