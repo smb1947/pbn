@@ -2,15 +2,15 @@
 
 ## Goal
 
-Produce a defensible PbN Claims & Ledger strategy by Sunday, September 13, 2026 at 9:00 PM Pacific Time. Use eight focused hours per day and reserve the final three hours of Day 2 for review, refinement, and submission. The CEO and potentially other CxOs will read it.
+Produce a defensible PbN Claims & Ledger V1 Product and Technical Specification by Sunday, September 13, 2026 at 9:00 PM Pacific Time. Use eight focused hours per day and reserve the final three hours of Day 2 for review, refinement, and submission. The CEO and potentially other CxOs will read it.
 
 ## Progress
 
 | Updated | Current phase | Used | Remaining | Next action |
 |---|---|---:|---:|---|
-| 2026-09-13 | Day 1: Draft | 3.75h | 12.25h | Define the exact initial product workflow and requirements in `product-design.md`. |
+| 2026-09-14 | Day 2: Claim preparation deep dive | 3.75h | 12.25h | Review the completed Claim-preparation specification for consistency, then add the minimum end-to-end coverage required by the brief. |
 
-Latest work block: moved the undeveloped product and technical design sections from `draft-strategy.md` to `product-design.md`.
+Latest work block: simplified the Claim-preparation boundaries into separate lists of five assumptions and five exclusions. Reliability requirements and rollout remain open; the product metrics still need a claim-creation integrity measure and a staff-effort measure.
 
 Update this row and the phase status after every work block.
 
@@ -27,7 +27,7 @@ Update this row and the phase status after every work block.
 | Day | Main document | Purpose |
 |---|---|---|
 | 1 | Internal working strategy narrative | Capture the customer, problem, constraints, goals, V1, success measures, design choices, and trade-offs without a page limit. Condense after the strategy is complete. This is not submitted. |
-| 2 | Final six-page PRFAQ: 1.5-page press release + 4.5-page FAQs | Convert the approved strategy into the only final submission. |
+| 2 | Claims & Ledger V1 Product and Technical Specification | Complete, review, render, and submit the product and technical design. |
 
 Appendices may be any length, but include only material needed to prove or defend the main narrative.
 
@@ -53,22 +53,15 @@ There is no Day 1 page limit during discovery. Preserve important evidence, assu
 
 **Day 1 gate:** Shankar can explain the customer problem, goals, constraints, and strategy in five minutes and defend why the V1 is neither smaller nor larger.
 
-## Day 2 — Final PRFAQ | 8 hours
+## Day 2 — Final Product and Technical Specification | 8 hours
 
 | Work | Time | Status | Output |
 |---|---:|---|---|
-| Press release | 1.5h | Not started | Write 1.5 pages explaining the customer, problem, launch, experience, and measurable value without technical jargon. |
-| Product FAQs | 1h | Not started | Cover users, workflow, V1 scope, exclusions, metrics, and edge cases. |
-| Technical and financial FAQs | 2h | Not started | Cover services, sources of truth, states, data, APIs, ledger entries, reversals, and balances. |
-| Reliability, tenancy, and launch FAQs | 0.5h | Not started | Cover duplicates, concurrency, reconciliation, tenant isolation, rollout, and monitoring. Build supporting appendices alongside the FAQs. |
-| Review, refine, and submit | 3h | Not started | Red-team the scope, accounting, architecture, failure behavior, assumptions, and tradeoffs; fix gaps and ambiguity; verify page limits and PDF rendering; submit. |
-
-**4.5-page FAQ allocation**
-
-- 1 page: customer, workflow, V1, exclusions, and success metrics
-- 2 pages: architecture, data ownership, ledger, balances, and APIs
-- 1 page: reliability, reconciliation, multi-tenancy, and security
-- 0.5 page: rollout, migration, risks, assumptions, and tradeoffs
+| Product and workflow design | 1.5h | In progress | Finalize users, workflows, functional requirements, scope, exclusions, metrics, and edge cases. |
+| Architecture and financial design | 2h | Not started | Finalize sources of truth, services, data flow, ledger entries, reversals, and balances. |
+| Data, APIs, and reliability | 1h | Not started | Finalize entities, contracts, duplicate protection, concurrency, and reconciliation. |
+| Tenancy, rollout, and assumptions | 0.5h | Not started | Finalize tenant isolation, security, rollout, migration, validation, risks, and assumptions. |
+| Review, refine, and submit | 3h | Not started | Red-team the scope, accounting, architecture, failure behavior, assumptions, and tradeoffs; fix gaps and ambiguity; verify completeness and PDF rendering; submit. |
 
 ## Appendices — Must-have only
 
@@ -77,7 +70,7 @@ There is no Day 1 page limit during discovery. Preserve important evidence, assu
 - Service-boundary and tenant-isolation diagram
 - Core data model with keys and uniqueness constraints
 - Balanced ledger examples, including a reversal
-- API and idempotency/error table
+- API, concurrency, and error table
 - Failure, reconciliation, rollout, and metrics matrix
 
 ## Final gates
@@ -85,5 +78,11 @@ There is no Day 1 page limit during discovery. Preserve important evidence, assu
 - Trace one claim from completed procedure through submission, adjudication, posting, and balances.
 - Explain denial, partial payment, duplicate ERA, correction, reversal, and unmatched remittance behavior.
 - Confirm every journal entry balances and every retry is safe from duplicate posting.
-- Answer every assignment requirement in the PRFAQ or appendix.
+- Answer every assignment requirement in the final specification or appendix.
 - Cut anything that does not improve correctness, buildability, financial rigor, product judgment, or defensibility.
+
+## Workspace maintenance — October 17, 2026
+
+Moved the resume PDF and its extracted text copy to Trash at Shankar’s request. Prepared the tracked deletions and this maintenance note for a normal commit and push on codex/claim-preparation-spec. The separate claims-ledger-workflow repository is excluded. Specification progress and focused-work-hour totals are unchanged.
+
+Prepared the updated AGENTS.md and all workflow-lab files for commit and push in the parent repository. The workflow lab’s local Git metadata is preserved and excluded from the parent commit. Specification progress and focused-work-hour totals are unchanged.

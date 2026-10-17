@@ -8,7 +8,7 @@ For example, after a dentist completes a $200 filling, the billing coordinator c
 
 ## Why It Is Important
 
-Billing staff lack one reliable workflow to create an accurate claim, track it through the insurer's decision, and record the correct financial outcome. The work can span the practice-management system, clearinghouse, insurer portal, payment explanation, and bank record, each updating at a different time. Staff repeatedly search, compare, enter, and recheck information while handling rejections, delays, denials, partial payments, duplicates, corrections, and reversals. A missed rejection delays payment, a duplicate posting overstates collections, and an incorrect adjustment can produce the wrong patient bill.
+Billing staff lack one reliable workflow to create an accurate claim, track it through the insurer's decision, and record the correct financial outcome. The work can span PbN's PMS, the clearinghouse, the insurer portal, the payment explanation, and the bank record, each updating at a different time. Staff repeatedly search, compare, enter, and recheck information while handling rejections, delays, denials, partial payments, duplicates, corrections, and reversals. A missed rejection delays payment, a duplicate posting overstates collections, and an incorrect adjustment can produce the wrong patient bill.
 
 Practice by Numbers (PbN) already helps dental practices manage analytics, patient communication, scheduling, forms, insurance verification, and patient payments.<sup>6</sup> Claims & Ledger would connect these capabilities to the missing workflow between completed treatment and the final balance. This would expand PbN from showing practices how their business is performing to helping them operate the workflow that produces revenue.
 
@@ -32,7 +32,7 @@ Initially, PbN will focus on the Claims & Ledger needs common to all three segme
 
 ## Target Customer and Users
 
-The initial target customer is a U.S. multi-location dental group that accepts insurance, uses PbN's practice-management system, and centralizes some or all insurance billing. This segment has enough claim volume and cross-location handoffs to benefit from automation, while its systems and processes are more consistent than those of an enterprise DSO. Designing for organization, practice, and location boundaries also creates a path to serve independent practices and enterprise DSOs later.
+The initial target customer is a U.S. multi-location dental group that accepts insurance, uses PbN as its dental PMS, and centralizes some or all insurance billing. This segment has enough claim volume and cross-location handoffs to benefit from automation, while its systems and processes are more consistent than those of an enterprise DSO. Designing for organization, practice, and location boundaries also creates a path to serve independent practices and enterprise DSOs later.
 
 The buyer is the owner or operations leader, who needs predictable collections, lower administrative cost, and consistent processes across locations.
 
@@ -158,6 +158,8 @@ The resulting scope supports primary completed-treatment claims through one clea
 
 | Term | Plain-language definition |
 |---|---|
+| ADA (American Dental Association) | The U.S. professional association that publishes the standard dental claim form and maintains CDT procedure codes. |
+| X12 | The organization and electronic transaction standards used to exchange healthcare information, including 837D claims, 276/277 claim status, and 835 remittance. |
 | Provider | The dentist or dental organization that delivers treatment and bills for it. |
 | Payer or insurer | The insurance company responsible for deciding and paying a covered claim. |
 | Claim | A request from a dental practice to an insurer for payment for completed treatment. |
@@ -218,8 +220,8 @@ The resulting scope supports primary completed-treatment claims through one clea
 
 | Term | Plain-language definition |
 |---|---|
-| Practice-management system (PMS) | The dental office's core software for patient records, treatment, scheduling, billing, and existing balances. |
-| Dental support organization (DSO) | An organization that provides business and administrative services to multiple affiliated dental practices. |
+| Practice-management system (PMS) | The dental office's core software for patient records, treatment, scheduling, billing, and balances. PbN is the PMS in this design. |
+| DSO (dental support organization) | An organization that provides shared business and administrative services to multiple affiliated dental practices. |
 | Organization | The customer account that may own or manage one or more dental practices. |
 | Practice | A dental business or operating unit within an organization. |
 | Location | A physical office where a practice treats patients. |
