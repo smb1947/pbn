@@ -84,3 +84,5 @@ There is no Day 1 page limit during discovery. Preserve important evidence, assu
 ## Workspace maintenance — October 17, 2026
 
 Moved the resume PDF and its extracted text copy to Trash at Shankar’s request. Prepared the tracked deletions and this maintenance note for a normal commit and push on codex/claim-preparation-spec. The separate claims-ledger-workflow repository is excluded. Specification progress and focused-work-hour totals are unchanged.
+
+Prepared the updated AGENTS.md and all workflow-lab files for commit and push in the parent repository. The workflow lab’s local Git metadata is preserved and excluded from the parent commit. Specification progress and focused-work-hour totals are unchanged.
